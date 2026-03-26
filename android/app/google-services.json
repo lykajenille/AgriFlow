@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "878385975645",
+    "project_id": "agriflow-beb9a",
+    "storage_bucket": "agriflow-beb9a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:878385975645:android:849cabb8ce9c8c638198b4",
+        "android_client_info": {
+          "package_name": "com.cics.agriflow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCf9bA9Z0lSVxNgyblzV7RzZmVaHgv3nbU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
