@@ -49,9 +49,8 @@ if ($result->num_rows === 0) {
 $user = $result->fetch_assoc();
 $stmt->close();
 
-// Verify password (use password_hash and password_verify in production)
-// For now, comparing plain text (CHANGE THIS IN PRODUCTION!)
-if ($user['password'] !== $password) {
+// Verify password using password_verify
+if (!password_verify($password, $user['password'])) {
     http_response_code(401);
     echo json_encode([
         'success' => false,

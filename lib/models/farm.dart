@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class Farm {
 
   String farmName;
@@ -7,7 +9,7 @@ class Farm {
   Farm(this.farmName,this.location,this.size);
 
   void addFarm(){
-    print("Farm added");
+  debugPrint("Farm added");
   }
 
 }

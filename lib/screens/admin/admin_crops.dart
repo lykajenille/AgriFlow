@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AdminCrops extends StatelessWidget {
-
+   AdminCrops({super.key});
   final List<String> crops = [
     "Rice - Growing",
     "Corn - Harvest Ready",
@@ -10,7 +10,7 @@ class AdminCrops extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
-
+    
     return Scaffold(
       appBar: AppBar(title: Text("Crop Monitoring")),
 

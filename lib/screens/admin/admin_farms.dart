@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AdminFarms extends StatelessWidget {
-
+   AdminFarms({super.key});
   final List<String> farms = [
     "Rice Farm A",
     "Corn Field B",

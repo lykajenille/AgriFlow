@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 class Crop {
 
   String cropName;
@@ -6,7 +8,7 @@ class Crop {
   Crop(this.cropName,this.plantingDate);
 
   void monitorCrop(){
-    print("Monitoring crop");
+    debugPrint("Monitoring crop");
   }
 
 }

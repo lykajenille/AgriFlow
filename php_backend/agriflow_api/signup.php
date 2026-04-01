@@ -96,9 +96,8 @@ if ($result->num_rows > 0) {
 }
 $stmt->close();
 
-// Hash password (use password_hash in production)
-// For now, storing plain text (CHANGE THIS IN PRODUCTION!)
-$hashedPassword = $password;
+// Hash password using bcrypt
+$hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
 // Insert new user
 $stmt = $conn->prepare("INSERT INTO users (username, email, password, role, full_name, created_at) VALUES (?, ?, ?, ?, ?, NOW())");

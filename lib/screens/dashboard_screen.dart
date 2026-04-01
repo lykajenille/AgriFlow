@@ -5,10 +5,10 @@ import 'farm_management_screen.dart';
 import 'reports_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
-
+  
   final User user;
 
-  DashboardScreen({required this.user});
+  const DashboardScreen({super.key,required this.user});
 
   Widget buildButton(BuildContext context,String title,Widget page){
 

@@ -1,20 +1,24 @@
+import 'dart:convert';
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 import 'login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
   bool isLoading = false;
   String errorMessage = '';
   String successMessage = '';
@@ -89,12 +93,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
       successMessage = '';
     });
 
-    var url = Uri.parse('http://10.0.2.2/agriflow_api/signup.php');
+    final apiHost = kIsWeb
+        ? 'http://localhost/agriflow_api'
+        : Platform.isAndroid
+            ? 'http://10.0.2.2/agriflow_api'
+            : 'http://127.0.0.1/agriflow_api';
+
+    final url = Uri.parse('$apiHost/signup.php');
 
     try {
-      var response = await http
-          .post(
-            url,
+      var response = await http.post(
+        url,
             body: {
               'username': usernameController.text,
               'email': emailController.text,
@@ -138,7 +147,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
     } catch (e) {
       setState(() {
-        errorMessage = 'Error connecting to API: ${e.toString()}';
+        errorMessage = 'Error connecting to database: ${e.toString()}';
       });
     } finally {
       if (mounted) {
@@ -219,9 +228,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   prefixIcon: Icon(Icons.lock, color: Colors.green[700]),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
                       color: Colors.green[700],
                     ),
                     onPressed: () {
@@ -245,12 +252,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 obscureText: _obscureConfirmPassword,
                 decoration: InputDecoration(
                   labelText: 'Confirm Password',
-                  prefixIcon: Icon(Icons.lock, color: Colors.green[700]),
+                  prefixIcon: Icon(Icons.lock_outline, color: Colors.green[700]),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureConfirmPassword
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                      _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
                       color: Colors.green[700],
                     ),
                     onPressed: () {
@@ -273,66 +278,67 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.red[100],
-                    border: Border.all(color: Colors.red[400]!),
+                    color: Colors.red[50],
                     borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red[300]!),
                   ),
                   child: Text(
                     errorMessage,
-                    style: TextStyle(color: Colors.red[900], fontSize: 14),
+                    style: TextStyle(color: Colors.red[700]),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               if (successMessage.isNotEmpty)
                 Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.green[100],
-                    border: Border.all(color: Colors.green[400]!),
+                    color: Colors.green[50],
                     borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.green[300]!),
                   ),
                   child: Text(
                     successMessage,
-                    style: TextStyle(color: Colors.green[900], fontSize: 14),
+                    style: TextStyle(color: Colors.green[700]),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-              if (errorMessage.isNotEmpty || successMessage.isNotEmpty)
-                SizedBox(height: 16),
-              SizedBox(
-                height: 50,
+              SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: isLoading ? null : signUp,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green[700],
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
                 child: isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : ElevatedButton(
-                        onPressed: signUp,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[700],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
-                        child: Text(
-                          'Sign Up',
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
+                      )
+                    : Text(
+                        'Create Account',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
               ),
               SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Already have an account? '),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                        color: Colors.green[700],
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                  );
+                },
+                child: Text(
+                  'Already have an account? Login',
+                  style: TextStyle(color: Colors.green[700]),
+                ),
               ),
             ],
           ),

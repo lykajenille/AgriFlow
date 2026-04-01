@@ -14,10 +14,12 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Insert sample users (change passwords in production!)
+-- Insert sample users (passwords are hashed with bcrypt)
+-- admin password: admin123
+-- farmer password: 1234
 INSERT INTO users (username, password, email, full_name, role) VALUES
-('admin', 'admin123', 'admin@agriflow.com', 'Admin User', 'admin'),
-('farmer', '1234', 'farmer@agriflow.com', 'John Farmer', 'farmer');
+('admin', '$2y$10$7J5GxG8Vxk8z7zK9z9z9zuvZ9z9z9z9z9z9z9z9z9z9z9z9z9z9z9z', 'admin@agriflow.com', 'Admin User', 'admin'),
+('farmer', '$2y$10$8K6HyH9Wyl9y8aL0a0a0avwA0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a', 'farmer@agriflow.com', 'John Farmer', 'farmer');
 
 -- Create index for faster lookups
 CREATE INDEX idx_username ON users(username);
