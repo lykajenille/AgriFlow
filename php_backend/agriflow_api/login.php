@@ -1,7 +1,14 @@
 <?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+
+// Handle preflight OPTIONS request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 require_once 'db_connect.php';
 
@@ -30,8 +37,9 @@ if (empty($username) || empty($password)) {
 }
 
 // Prevent SQL injection - use prepared statements
-$stmt = $conn->prepare("SELECT id, username, password, role, email, full_name FROM users WHERE username = ?");
-$stmt->bind_param("s", $username);
+// Allow login with either username or email
+$stmt = $conn->prepare("SELECT id, username, password, role, email, full_name FROM users WHERE username = ? OR email = ?");
+$stmt->bind_param("ss", $username, $username);
 $stmt->execute();
 $result = $stmt->get_result();
 
