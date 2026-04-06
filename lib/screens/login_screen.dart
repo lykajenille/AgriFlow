@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/auth_service.dart';
 import 'admin/admin_dashboard.dart';
+import 'dashboard_screen.dart';
 import 'signup_screen.dart';
 import 'forgot_password_screen.dart';
 
@@ -82,12 +83,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       AuthService authService = AuthService();
-      var result = await Future.delayed(Duration.zero, () {
-        return authService.login(
-          usernameController.text,
-          passwordController.text,
-        );
-      });
+      var result = await authService.login(
+        usernameController.text,
+        passwordController.text,
+      );
 
       if (result != null) {
         await _saveCredentials();
@@ -101,9 +100,12 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         } else {
           if (mounted) {
-            setState(() {
-              errorMessage = 'Farmer dashboard not yet implemented';
-            });
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DashboardScreen(user: result),
+              ),
+            );
           }
         }
       } else {
