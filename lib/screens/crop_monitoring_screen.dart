@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CropMonitoringScreen extends StatelessWidget {
-  const CropMonitoringScreen({super.key});
+  final String userId;
+
+const CropMonitoringScreen({super.key, required this.userId});
   @override
   Widget build(BuildContext context){
     return Scaffold(

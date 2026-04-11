@@ -6,22 +6,20 @@ import 'reports_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   
-  final User user;
+  final User userId;
 
-  const DashboardScreen({super.key,required this.user});
+  const DashboardScreen({super.key,required this.userId});
 
-  Widget buildButton(BuildContext context,String title,Widget page){
-
+  Widget buildButton(BuildContext context, String title, Widget Function() pageBuilder) {
     return ElevatedButton(
       child: Text(title),
-      onPressed: (){
+      onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context)=>page),
+          MaterialPageRoute(builder: (context) => pageBuilder()),
         );
       },
     );
-
   }
 
   @override
@@ -38,15 +36,15 @@ class DashboardScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
 
-            Text("Welcome ${user.username}"),
+            Text("Welcome ${userId.username}"),
 
             SizedBox(height:20),
 
-            buildButton(context,"Crop Monitoring",CropMonitoringScreen()),
-            buildButton(context,"Farm Management",FarmManagementScreen()),
-            buildButton(context,"Reports",ReportsScreen()),
+            buildButton(context, "Crop Monitoring", () => CropMonitoringScreen(userId: userId.id.toString())),
+            buildButton(context, "Farm Management", () => FarmManagementScreen(userId: userId.id.toString())),
+            buildButton(context, "Reports", () => ReportsScreen(userId: userId.id.toString())),
 
-            if(user.isAdmin()) ...[
+            if(userId.isAdmin()) ...[
               SizedBox(height:20),
               Text("Admin Controls",style:TextStyle(fontSize:20,fontWeight:FontWeight.bold)),
               ElevatedButton(

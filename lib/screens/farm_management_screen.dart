@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
+
 class FarmManagementScreen extends StatelessWidget {
-  const FarmManagementScreen({super.key});
+ final String userId;
+
+const FarmManagementScreen({super.key, required this.userId});
   @override
   Widget build(BuildContext context){
 
