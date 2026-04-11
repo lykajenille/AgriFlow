@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -92,9 +91,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       successMessage = '';
     });
 
-    final apiHost = kIsWeb
-        ? 'http://localhost/agriflow_api'
-        : 'http://192.168.1.3/agriflow_api';
+    const apiHost = 'https://agriflow.ginxproduction.com';
 
     final url = Uri.parse('$apiHost/signup.php');
 

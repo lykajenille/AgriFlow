@@ -1,0 +1,10 @@
+# Environment config (contains DB credentials)
+# config.php
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

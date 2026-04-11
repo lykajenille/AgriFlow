@@ -1,15 +1,8 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static String get baseUrl {
-    if (kIsWeb) {
-      return "http://localhost/agriflow_api";
-    } else {
-      return "http://192.168.1.3/agriflow_api";
-    }
-  }
+  static const String baseUrl = "https://agriflow.ginxproduction.com";
 
   static Future<Map<String, dynamic>> login(
       String username, String password) async {

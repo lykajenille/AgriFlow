@@ -1,15 +1,25 @@
--- Create database
-CREATE DATABASE IF NOT EXISTS agriflow;
+-- ============================================================
+-- AgriFlow Database Setup — migrate:fresh --seed
+-- WARNING: This DROPS all tables and recreates them from scratch!
+-- ============================================================
+
+-- DROP & RECREATE DATABASE
+DROP DATABASE IF EXISTS agriflow;
+CREATE DATABASE agriflow;
 USE agriflow;
 
--- USERS TABLE (admin & farmer)
-CREATE TABLE IF NOT EXISTS users (
+-- USERS TABLE
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    fullname VARCHAR(100) NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) UNIQUE,
     password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100),
     role ENUM('admin','farmer') DEFAULT 'farmer',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_username (username),
+    INDEX idx_email (email)
 );
 
 -- FARMS TABLE
@@ -68,6 +78,6 @@ CREATE TABLE IF NOT EXISTS harvests (
     FOREIGN KEY (crop_id) REFERENCES crops(id) ON DELETE CASCADE
 );
 
--- SAMPLE ADMIN ACCOUNT
+-- SAMPLE ADMIN ACCOUNT (password: admin123, hashed with bcrypt via password_hash())
 INSERT INTO users (fullname, username, password, role)
-VALUES ('System Admin', 'admin', MD5('admin123'), 'admin');
+VALUES ('System Admin', 'admin', '$2y$10$CP0e50c0cZXahdkAzKSBIOrGZPxEWWlgR5GxUOP//Y0UMenSVPlQG', 'admin');
