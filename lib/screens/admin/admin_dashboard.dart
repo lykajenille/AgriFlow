@@ -1,263 +1,287 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:agriflow/screens/login_screen.dart';
+import 'package:agriflow/models/user.dart';
+import 'admin_overview.dart';
+import 'admin_users.dart';
+import 'admin_farms.dart';
+import 'admin_crops.dart';
+import 'admin_reports.dart';
+import 'admin_settings.dart';
 
 class AdminDashboard extends StatefulWidget {
-  const AdminDashboard({super.key});
+  final User user;
+  const AdminDashboard({super.key, required this.user});
 
   @override
   State<AdminDashboard> createState() => _AdminDashboardState();
 }
 
-class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _AdminDashboardState extends State<AdminDashboard> {
+  int _selectedIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 5, vsync: this);
-  }
+  final List<_NavItem> _navItems = [
+    _NavItem('Overview', Icons.dashboard_rounded),
+    _NavItem('Users', Icons.people_rounded),
+    _NavItem('Farms', Icons.agriculture_rounded),
+    _NavItem('Crops', Icons.grass_rounded),
+    _NavItem('Reports', Icons.assessment_rounded),
+    _NavItem('Settings', Icons.settings_rounded),
+  ];
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+  void _navigateTo(int index) => setState(() => _selectedIndex = index);
 
   void _logout() {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-      (Route<dynamic> route) => false,
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                (route) => false,
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red[600],
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Admin Dashboard'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(text: 'System Settings'),
-            Tab(text: 'User Activity'),
-            Tab(text: 'System Reports'),
-            Tab(text: 'Access Control'),
-            Tab(text: 'Farm Performance'),
-          ],
+      backgroundColor: Colors.grey[100],
+      appBar: _buildAppBar(),
+      drawer: _buildDrawer(),
+      body: _buildBody(),
+      bottomNavigationBar: _buildBottomNav(),
+    );
+  }
+
+  // â”€â”€ App Bar â”€â”€
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.green[800],
+      foregroundColor: Colors.white,
+      title: Row(
+        children: [
+          const Icon(Icons.eco, size: 28),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'AgriFlow Admin',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                _navItems[_selectedIndex].label,
+                style: TextStyle(fontSize: 12, color: Colors.green[100]),
+              ),
+            ],
+          ),
+        ],
+      ),
+      actions: [
+        IconButton(
+          icon: Badge(
+            smallSize: 8,
+            backgroundColor: Colors.orange,
+            child: const Icon(Icons.notifications_outlined),
+          ),
+          onPressed: () {},
         ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Center(
-              child: ElevatedButton.icon(
-                onPressed: _logout,
-                icon: Icon(Icons.logout),
-                label: Text('Logout'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: GestureDetector(
+            onTap: _logout,
+            child: Chip(
+              avatar: CircleAvatar(
+                backgroundColor: Colors.green[600],
+                child: Text(
+                  widget.user.username[0].toUpperCase(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
               ),
+              label: Text(
+                widget.user.username,
+                style: const TextStyle(color: Colors.white, fontSize: 13),
+              ),
+              backgroundColor: Colors.green[700],
+              side: BorderSide.none,
             ),
           ),
-        ],
-      ),
-      body: TabBarView(
-        controller: _tabController,
+        ),
+      ],
+    );
+  }
+
+  // â”€â”€ Drawer â”€â”€
+  Widget _buildDrawer() {
+    return Drawer(
+      child: Column(
         children: [
-          // System Settings Tab
-          SingleChildScrollView(
-            padding: EdgeInsets.all(16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.green[800]!, Colors.green[600]!],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'System Settings',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                CircleAvatar(
+                  radius: 32,
+                  backgroundColor: Colors.white.withOpacity(0.2),
+                  child: Text(
+                    widget.user.username[0].toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 12),
                 Text(
-                  'Data needed to manage the system itself.',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                  widget.user.fullName ?? widget.user.username,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                SizedBox(height: 24),
-                _settingsCard('Notification Preferences', 'Manage how you receive alerts'),
-                _settingsCard('Reminders', 'Set up automatic reminders'),
-                _settingsCard('System Maintenance', 'Schedule system maintenance'),
-                _settingsCard('Backup Settings', 'Configure data backup options'),
+                const SizedBox(height: 4),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Text(
+                    'Administrator',
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                ),
               ],
             ),
           ),
-          // User Activity Logs Tab
-          SingleChildScrollView(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
               children: [
-                Text(
-                  'User Activity Logs',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Login history, operations performed',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                ),
-                SizedBox(height: 24),
-                _activityCard('Admin logged in', 'Today 10:30 AM', Icons.login),
-                _activityCard('Database backup completed', 'Today 09:15 AM', Icons.backup),
-                _activityCard('User roles updated', 'Yesterday 03:45 PM', Icons.edit),
-                _activityCard('System report generated', 'Yesterday 01:20 PM', Icons.description),
+                for (int i = 0; i < _navItems.length; i++)
+                  ListTile(
+                    leading: Icon(
+                      _navItems[i].icon,
+                      color: _selectedIndex == i
+                          ? Colors.green[700]
+                          : Colors.grey[600],
+                    ),
+                    title: Text(
+                      _navItems[i].label,
+                      style: TextStyle(
+                        fontWeight: _selectedIndex == i
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: _selectedIndex == i
+                            ? Colors.green[700]
+                            : Colors.grey[800],
+                      ),
+                    ),
+                    selected: _selectedIndex == i,
+                    selectedTileColor: Colors.green[50],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    onTap: () {
+                      _navigateTo(i);
+                      Navigator.pop(context);
+                    },
+                  ),
               ],
             ),
           ),
-          // Reports Tab
-          SingleChildScrollView(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'System Reports',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Daily, weekly, monthly farm performance reports',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                ),
-                SizedBox(height: 24),
-                _reportCard('Daily Report', 'Today\'s farm operations summary', Icons.today),
-                _reportCard('Weekly Report', 'Last 7 days performance metrics', Icons.date_range),
-                _reportCard('Monthly Report', 'Full month analysis and insights', Icons.calendar_month),
-                _reportCard('Yield Analysis', 'Crop yield trends and predictions', Icons.trending_up),
-              ],
-            ),
+          const Divider(height: 1),
+          ListTile(
+            leading: Icon(Icons.logout, color: Colors.red[400]),
+            title: Text('Logout', style: TextStyle(color: Colors.red[400])),
+            onTap: _logout,
           ),
-          // Access Control Tab
-          SingleChildScrollView(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Access Control',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Who can see or edit data',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                ),
-                SizedBox(height: 24),
-                _accessCard('Admin Role', 'Full system access', Colors.red),
-                _accessCard('Manager Role', 'Farm management and reporting', Colors.orange),
-                _accessCard('Worker Role', 'Data entry and monitoring', Colors.blue),
-                _accessCard('Viewer Role', 'Read-only access to reports', Colors.green),
-              ],
-            ),
-          ),
-          // Farm Performance Tab
-          SingleChildScrollView(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Farm Performance',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Daily, weekly, monthly farm performance metrics',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                ),
-                SizedBox(height: 24),
-                _performanceCard('Total Farms', '45', Icons.agriculture),
-                _performanceCard('Active Crops', '127', Icons.grain),
-                _performanceCard('Avg Yield', '8.5 tons/ha', Icons.trending_up),
-                _performanceCard('Health Score', '92%', Icons.favorite),
-              ],
-            ),
-          ),
+          const SizedBox(height: 8),
         ],
       ),
     );
   }
 
-  Widget _settingsCard(String title, String subtitle) {
-    return Card(
-      child: ListTile(
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(subtitle),
-        trailing: Icon(Icons.arrow_forward),
-        onTap: () {},
-      ),
+  // â”€â”€ Bottom Nav â”€â”€
+  Widget _buildBottomNav() {
+    return BottomNavigationBar(
+      currentIndex: _selectedIndex > 4 ? 0 : _selectedIndex,
+      onTap: _navigateTo,
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: Colors.green[700],
+      unselectedItemColor: Colors.grey,
+      selectedFontSize: 12,
+      unselectedFontSize: 11,
+      items: _navItems.take(5).map((item) {
+        return BottomNavigationBarItem(
+          icon: Icon(item.icon),
+          label: item.label,
+        );
+      }).toList(),
     );
   }
 
-  Widget _activityCard(String title, String time, IconData icon) {
-    return Card(
-      child: ListTile(
-        leading: Icon(icon, color: Colors.green),
-        title: Text(title),
-        subtitle: Text(time),
-        trailing: Icon(Icons.arrow_forward),
-      ),
-    );
+  // â”€â”€ Body â”€â”€
+  Widget _buildBody() {
+    switch (_selectedIndex) {
+      case 0:
+        return AdminOverview(user: widget.user, onNavigate: _navigateTo);
+      case 1:
+        return const AdminUsers();
+      case 2:
+        return const AdminFarms();
+      case 3:
+        return const AdminCrops();
+      case 4:
+        return const AdminReports();
+      case 5:
+        return const AdminSettings();
+      default:
+        return AdminOverview(user: widget.user, onNavigate: _navigateTo);
+    }
   }
+}
 
-  Widget _reportCard(String title, String description, IconData icon) {
-    return Card(
-      child: ListTile(
-        leading: Icon(icon, color: Colors.blue),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(description),
-        trailing: Icon(Icons.download),
-        onTap: () {},
-      ),
-    );
-  }
-
-  Widget _accessCard(String role, String description, Color color) {
-    return Card(
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(left: BorderSide(color: color, width: 4)),
-        ),
-        child: ListTile(
-          title: Text(role, style: TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(description),
-          trailing: Icon(Icons.people, color: color),
-        ),
-      ),
-    );
-  }
-
-  Widget _performanceCard(String title, String value, IconData icon) {
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, color: Colors.green, size: 28),
-                SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: TextStyle(color: Colors.grey)),
-                    SizedBox(height: 4),
-                    Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+class _NavItem {
+  final String label;
+  final IconData icon;
+  const _NavItem(this.label, this.icon);
 }

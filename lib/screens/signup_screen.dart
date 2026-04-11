@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -95,9 +94,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     final apiHost = kIsWeb
         ? 'http://localhost/agriflow_api'
-        : Platform.isAndroid
-            ? 'http://10.0.2.2/agriflow_api'
-            : 'http://127.0.0.1/agriflow_api';
+        : 'http://192.168.1.3/agriflow_api';
 
     final url = Uri.parse('$apiHost/signup.php');
 

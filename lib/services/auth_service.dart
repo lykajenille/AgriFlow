@@ -2,11 +2,9 @@ import '../models/user.dart';
 import 'api_services.dart';
 
 class AuthService {
-  final ApiService _apiService = ApiService();
-
   Future<User?> login(String username, String password) async {
     try {
-      var response = await _apiService.login(username, password);
+      var response = await ApiService.login(username, password);
 
       if (response['success'] == true && response['user'] != null) {
         return User.fromJson(response['user']);
